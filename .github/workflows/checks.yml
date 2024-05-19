@@ -16,4 +16,6 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Build os
-        run: nix flake show && nix build .#nixosConfigurations.nixos.config.system.build.toplevel
+        run: | 
+          nix flake show .
+          nix flake check .
