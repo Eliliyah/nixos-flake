@@ -5,7 +5,7 @@
     outputs = inputs: with inputs; let
         system = "x86_64-linux";
         pkgs = import nixpkgs {
-            inherit system
+            inherit system;
         };
     in {
         nixosConfigurations =  {
@@ -25,7 +25,7 @@
             };
             testScript = {nodes, ...}: ''
                 machine.wait_for_unit("default.target")
-            ''
+            '';
         } ;
     };
 }
