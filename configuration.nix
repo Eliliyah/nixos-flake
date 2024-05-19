@@ -1,26 +1,27 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, lib, ... }:
-let
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}: let
   # nix-software-center = import (pkgs.fetchFromGitHub {
   #   owner = "vlinkz";
   #   repo = "nix-software-center";
   #   rev = "0.1.2";
   #   sha256 = "xiqF1mP8wFubdsAQ1BmfjzCgOD3YZf7EGWl9i69FTls=";
   # }) {};
-in
-
-{
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      # ./modules/tuigreet.nix
-    ];
+in {
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    # ./modules/tuigreet.nix
+  ];
   # enable flakes support
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-# Make sure opengl is enabled
+  nix.settings.experimental-features = ["nix-command" "flakes"];
+  # Make sure opengl is enabled
   hardware.opengl = {
     enable = true;
     driSupport = true;
@@ -31,7 +32,6 @@ in
   services.xserver.videoDrivers = ["nvidia"];
 
   hardware.nvidia = {
-
     # Modesetting is needed for most Wayland compositors
     modesetting.enable = true;
 
@@ -93,71 +93,66 @@ in
     xkbVariant = "";
   };
 
-services.hardware.openrgb = {
-package = pkgs.openrgb-with-all-plugins;
-enable = true;
-motherboard = "amd";
-};
+  services.hardware.openrgb = {
+    package = pkgs.openrgb-with-all-plugins;
+    enable = true;
+    motherboard = "amd";
+  };
 
-services.fstrim = {
+  services.fstrim = {
     enable = true;
     interval = "weekly";
   };
 
-services.asusd = {
-  enable = true;
-  enableUserService = true;
-};
+  services.asusd = {
+    enable = true;
+    enableUserService = true;
+  };
 
-services.mullvad-vpn.enable = true;
+  services.mullvad-vpn.enable = true;
 
-programs.rog-control-center.enable = true;
+  programs.rog-control-center.enable = true;
 
-programs.starship.enable = true;
+  programs.starship.enable = true;
 
-programs.fish.enable = true;
+  programs.fish.enable = true;
 
-programs.noisetorch.enable = true;
+  programs.noisetorch.enable = true;
 
-services.flatpak.enable = true;
+  services.flatpak.enable = true;
 
-services.blueman.enable = true;
+  services.blueman.enable = true;
 
-zramSwap.enable = true;
+  zramSwap.enable = true;
 
-programs.openvpn3.enable = true;
+  programs.openvpn3.enable = true;
 
-hardware.bluetooth.enable = true;
+  hardware.bluetooth.enable = true;
 
-systemd.services.NetworkManager-wait-online.enable = false;
+  systemd.services.NetworkManager-wait-online.enable = false;
 
-services.supergfxd = {
-        enable = true;
-        settings = {
-          always_reboot = false;
-          no_logind = true;
-          mode = "Integrated";
-          vfio_enable = false;
-          vfio_save = false;
-          logout_timeout_s = 180;
-          hotplug_type = "None";
-        };
-      };
+  services.supergfxd = {
+    enable = true;
+    settings = {
+      always_reboot = false;
+      no_logind = true;
+      mode = "Integrated";
+      vfio_enable = false;
+      vfio_save = false;
+      logout_timeout_s = 180;
+      hotplug_type = "None";
+    };
+  };
 
-# personal.desktop.displayManager.tuigreet.enable = true;
+  # personal.desktop.displayManager.tuigreet.enable = true;
 
-nix.gc = {
-  automatic = true;
-  dates = "weekly";
-  options = "--delete-older-than 7d";
-};
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 7d";
+  };
 
-nix.optimise.automatic = true;
-
-virtualisation.virtualbox.host.enable = true;
-users.extraGroups.vboxusers.members = [ "ellie" ];
-virtualisation.virtualbox.host.enableExtensionPack = true;
-
+  nix.optimise.automatic = true;
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
@@ -185,11 +180,11 @@ virtualisation.virtualbox.host.enableExtensionPack = true;
   users.users.ellie = {
     isNormalUser = true;
     description = "ellie";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = ["networkmanager" "wheel"];
     packages = with pkgs; [
       firefox
       kate
-    #  thunderbird
+      #  thunderbird
     ];
   };
 
@@ -198,41 +193,10 @@ virtualisation.virtualbox.host.enableExtensionPack = true;
   services.xserver.displayManager.autoLogin.user = "ellie";
 
   # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
+  # nixpkgs.config.allowUnfree = lib.mkDefault true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [ 
-latte-dock  
-vivaldi
-vivaldi-ffmpeg-codecs
-vscodium
-clementine
-gimp
-libreoffice-fresh
-neofetch
-discord
-plasma-browser-integration
-wineWowPackages.staging
-winetricks
-dosbox-staging
-ferdium
-appimage-run
-mullvad-vpn
-starship
-libsForQt5.discover
-# nix-software-center
-libsForQt5.ktorrent
-kcalc
-lutris
-libsForQt5.kamoso
-blueman
-bluez
-vlc
-
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
-  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -260,5 +224,4 @@ vlc
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "22.11"; # Did you read the comment?
-
 }
