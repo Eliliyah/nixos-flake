@@ -14,5 +14,6 @@
                 ];
             };
         };
+        checks."${system}".default = self.nixosConfigurations.nixos;
     };
 }
