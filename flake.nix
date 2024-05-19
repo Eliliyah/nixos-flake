@@ -4,6 +4,9 @@
     };
     outputs = inputs: with inputs; let
         system = "x86_64-linux";
+        pkgs = import nixpkgs {
+            inherit system
+        };
     in {
         nixosConfigurations =  {
             nixos =  nixpkgs.lib.nixosSystem {
@@ -14,6 +17,15 @@
                 ];
             };
         };
-        checks."${system}".default = self.nixosConfigurations.nixos.config.system.build.toplevel;
+        checks."${system}".default =  pkgs.nixosTest {
+            nodes.machine = { config, pkgs, ... }: {
+                imports = [
+                  ./configuration.nix
+                ];
+            };
+            testScript = {nodes, ...}: ''
+                machine.wait_for_unit("default.target")
+            ''
+        } ;
     };
 }
