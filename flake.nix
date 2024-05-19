@@ -19,6 +19,7 @@
               nixpkgs.config.allowUnfree = true;
             }
             ./configuration.nix
+            ./packages.nix
           ];
         };
       };
