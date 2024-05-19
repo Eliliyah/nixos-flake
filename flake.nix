@@ -14,6 +14,6 @@
                 ];
             };
         };
-        checks."${system}".default = self.nixosConfigurations.nixos;
+        checks."${system}".default = self.nixosConfigurations.nixos.config.system.build.toplevel;
     };
 }
