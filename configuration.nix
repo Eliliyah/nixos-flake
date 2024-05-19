@@ -153,11 +153,6 @@ in {
   };
 
   nix.optimise.automatic = true;
-
-  virtualisation.virtualbox.host.enable = true;
-  users.extraGroups.vboxusers.members = ["ellie"];
-  virtualisation.virtualbox.host.enableExtensionPack = true;
-
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
