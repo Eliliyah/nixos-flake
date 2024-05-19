@@ -6,6 +6,7 @@
         system = "x86_64-linux";
         pkgs = import nixpkgs {
             inherit system;
+            config.allowUnfree = true;
         };
     in {
         nixosConfigurations =  {
@@ -13,17 +14,18 @@
                 # config._module.args = {inherit inputs;};
                 inherit system;
                 modules = [
+                    {
+                        nixpkgs.config.allowUnfree = true;
+                    }
                     ./configuration.nix
                 ];
             };
         };
         checks."${system}".default =  pkgs.nixosTest {
-            nodes.machine = { config, pkgs, ... }: {
-                imports = [
-                  ./configuration.nix
-                ];
-            };
-            testScript = {nodes, ...}: ''
+            name = "minmal-test";
+            nodes.machine = ./configuration.nix;
+
+            testScript = ''
                 machine.wait_for_unit("default.target")
             '';
         } ;
