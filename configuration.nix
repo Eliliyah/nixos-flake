@@ -6,21 +6,26 @@
   pkgs,
   lib,
   ...
-}: let
-  # nix-software-center = import (pkgs.fetchFromGitHub {
-  #   owner = "vlinkz";
-  #   repo = "nix-software-center";
-  #   rev = "0.1.2";
-  #   sha256 = "xiqF1mP8wFubdsAQ1BmfjzCgOD3YZf7EGWl9i69FTls=";
-  # }) {};
-in {
+}:
+let
+in
+# nix-software-center = import (pkgs.fetchFromGitHub {
+#   owner = "vlinkz";
+#   repo = "nix-software-center";
+#   rev = "0.1.2";
+#   sha256 = "xiqF1mP8wFubdsAQ1BmfjzCgOD3YZf7EGWl9i69FTls=";
+# }) {};
+{
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     # ./modules/tuigreet.nix
   ];
   # enable flakes support
-  nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
   # Make sure opengl is enabled
   hardware.opengl = {
     enable = true;
@@ -29,7 +34,7 @@ in {
   };
 
   # Tell Xorg to use the nvidia driver (also valid for Wayland)
-  services.xserver.videoDrivers = ["nvidia"];
+  services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
     # Modesetting is needed for most Wayland compositors
@@ -50,7 +55,7 @@ in {
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
-  boot.kernelParams = ["nouveau.modeset=0"];
+  boot.kernelParams = [ "nouveau.modeset=0" ];
   boot.loader.grub.configurationLimit = 5;
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -84,13 +89,15 @@ in {
   services.xserver.enable = true;
 
   # Enable the KDE Plasma Desktop Environment.
-  services.xserver.displayManager.sddm.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
+  services.displayManager.sddm.enable = true;
+  services.desktopManager.plasma6.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
-    layout = "us";
-    xkbVariant = "";
+    xkb = {
+      layout = "us";
+      variant = "";
+    };
   };
 
   services.hardware.openrgb = {
@@ -180,7 +187,10 @@ in {
   users.users.ellie = {
     isNormalUser = true;
     description = "ellie";
-    extraGroups = ["networkmanager" "wheel"];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
     packages = with pkgs; [
       firefox
       kate
@@ -189,8 +199,8 @@ in {
   };
 
   # Enable automatic login for the user.
-  services.xserver.displayManager.autoLogin.enable = true;
-  services.xserver.displayManager.autoLogin.user = "ellie";
+  services.displayManager.autoLogin.enable = true;
+  services.displayManager.autoLogin.user = "ellie";
 
   # Allow unfree packages
   # nixpkgs.config.allowUnfree = lib.mkDefault true;
