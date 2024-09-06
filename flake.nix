@@ -1,23 +1,24 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
   };
-  outputs = inputs:
-    with inputs; let
+  outputs =
+    inputs:
+    with inputs;
+    let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
       };
-    in {
+    in
+    {
       nixosConfigurations = {
         nixos = nixpkgs.lib.nixosSystem {
           # config._module.args = {inherit inputs;};
           inherit system;
           modules = [
-            {
-              nixpkgs.config.allowUnfree = true;
-            }
+            { nixpkgs.config.allowUnfree = true; }
             ./configuration.nix
             ./packages.nix
           ];
