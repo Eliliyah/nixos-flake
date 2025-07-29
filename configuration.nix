@@ -19,13 +19,39 @@ in
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ./modules/networking.nix
     # ./modules/tuigreet.nix
   ];
+
+  programs.virt-manager.enable = true;
+
+  users.groups.libvirtd.members = ["ellie"];
+
+   virtualisation.libvirtd = {
+    enable = true;
+    qemu = {
+      package = pkgs.qemu_kvm;
+      runAsRoot = true;
+      swtpm.enable = true;
+      ovmf = {
+        enable = true;
+        packages = [(pkgs.OVMF.override {
+          secureBoot = true;
+          tpmSupport = true;
+        }).fd];
+      };
+    };
+  };
+
+  virtualisation.spiceUSBRedirection.enable = true;
+
   # enable flakes support
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
   ];
+  xdg.portal.enable = true;
+  hardware.enableRedistributableFirmware = true;
   # Make sure opengl is enabled
   hardware.opengl = {
     enable = true;
@@ -48,7 +74,7 @@ in
     nvidiaSettings = true;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
 
   # Bootloader.
@@ -63,9 +89,6 @@ in
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
-  networking.networkmanager.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -89,8 +112,22 @@ in
   services.xserver.enable = true;
 
   # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.desktopManager.gnome.enable = true;
+  programs.dconf.enable = true;
+  services.sysprof.enable = true;
+  programs.xwayland.enable = true;
+  programs.fish.enable = true;
+  programs.bash = {
+  interactiveShellInit = ''
+    if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
+    then
+      shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
+      exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
+    fi
+  '';
+};
+  # personal.desktop.displayManager.tuigreet.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
@@ -122,13 +159,15 @@ in
 
   programs.starship.enable = true;
 
-  programs.fish.enable = true;
+  # programs.fish.enable = true;
 
   programs.noisetorch.enable = true;
 
+  systemd.network.wait-online.enable = lib.mkForce false;
+
   services.flatpak.enable = true;
 
-  services.blueman.enable = true;
+  # services.blueman.enable = true;
 
   zramSwap.enable = true;
 
@@ -150,6 +189,8 @@ in
       hotplug_type = "None";
     };
   };
+
+  nixpkgs.config.allowUnsupportedSystem = true;
 
   # personal.desktop.displayManager.tuigreet.enable = true;
 
@@ -186,6 +227,7 @@ in
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.ellie = {
     isNormalUser = true;
+    initialPassword = "ellie";
     description = "ellie";
     extraGroups = [
       "networkmanager"
@@ -199,8 +241,8 @@ in
   };
 
   # Enable automatic login for the user.
-  services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = "ellie";
+  # services.displayManager.autoLogin.enable = true;
+  # services.displayManager.autoLogin.user = "ellie";
 
   # Allow unfree packages
   # nixpkgs.config.allowUnfree = lib.mkDefault true;
